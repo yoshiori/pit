@@ -12,9 +12,9 @@ class Pit:
     @staticmethod
     def set(name, opts={}):
         profile = Pit.__load()
-        ret = {}
+        result = {}
         if opts.has_key('data'):
-            ret = opts['data']
+            result = opts['data']
         else:
             if not os.environ.has_key('EDITOR'):
                 return {}
@@ -28,11 +28,12 @@ class Pit:
             if result == c:
                 print 'No Changes'
             result = yaml.load(result)
-            profile[name] = result
-            yaml.dump(profile,
-                      open(Pit.__profile, 'w'),
-                      default_flow_style=False)
-            return result
+
+        profile[name] = result
+        yaml.dump(profile,
+                  open(Pit.__profile, 'w'),
+                  default_flow_style=False)
+        return result
 
     @staticmethod
     def get(name, opts={}):
@@ -40,7 +41,8 @@ class Pit:
         ret = load_data[name] if load_data.has_key(name) else {} 
         if opts.has_key('require'):
             for k, v in opts['require'].iteritems():
-                ret[k] = v
+                if not ret.has_key(k):
+                    ret[k] = v
             ret = Pit.set(name,{'config' : ret})
         return ret or {'username' : '', 'password' : ''}
 
