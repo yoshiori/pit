@@ -27,6 +27,8 @@ class Pit:
             result = open(path).read()
             if result == c:
                 print 'No Changes'
+                return profile[name]
+
             result = yaml.load(result)
 
         profile[name] = result
@@ -40,10 +42,13 @@ class Pit:
         load_data = Pit.__load()
         ret = load_data[name] if load_data.has_key(name) else {} 
         if opts.has_key('require'):
-            for k, v in opts['require'].iteritems():
-                if not ret.has_key(k):
-                    ret[k] = v
-            ret = Pit.set(name,{'config' : ret})
+            flg = False
+            keys = set(opts['require'].keys()) - set(ret.keys())
+            if keys:
+                for key in keys:
+                    ret[key] = opts['require'][key] 
+                ret = Pit.set(name,{'config' : ret})
+        
         return ret or {'username' : '', 'password' : ''}
 
     @staticmethod
@@ -83,6 +88,7 @@ class Pit:
         return yaml.load(open(Pit.__config))
 
 if __name__ == '__main__':
-    config = Pit.get('twitter.com',{'require': {'email':'your email','password':'your password'}})
+    config = Pit.get('34twitter.com',{'require': {'email':'your email','password':'your password'}})
+    print config
     print config['email']
     print config['password']
