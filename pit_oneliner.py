@@ -29,7 +29,7 @@ def set(name, opts={}):
         Popen([os.environ['EDITOR'],path]).communicate()
         setitem('set_result', open(path).read())
         if set_result == c:
-            print 'No Changes'
+            func_print('No Changes')
             return set_profile[name]
         
         setitem('set_result', yaml.load(result))
@@ -63,27 +63,24 @@ def switch(name, opts={}):
     return switch_ret
 
 def _load():
-    if not os.path.exists(DIRECTORY):
-        os.mkdir(DIRECTORY)
-        os.chmod(DIRECTORY, 0700)
-
-    if not os.path.exists(_config):
-        yaml.dump({'profile' : 'default'},
-                  open(_config, 'w'),
-                  default_flow_style=False)
-        os.chmod(_config, 0600)
-
-    switch(config()['profile'])
+    return ([[os.mkdir(DIRECTORY)] and [os.chmod(DIRECTORY, 0700)] if not os.path.exists(DIRECTORY) else True]
+    and
+    [[yaml.dump({'profile' : 'default'}, open(_config, 'w'), default_flow_style=False)] 
+     and [os.chmod(_config, 0600)] if not os.path.exists(_config) else True]
+    and
+    [switch(config()['profile'])]
+    and 
+    [[yaml.dump({}, 
+                open(_profile, 'w'), 
+                default_flow_style=False)]
+     and [os.chmod(_profile, 0600)] if not os.path.exists(_profile) else True]
     
-    if not os.path.exists(_profile):
-        yaml.dump({}, 
-                  open(_profile, 'w'), 
-                  default_flow_style=False)
-        os.chmod(_profile, 0600)
-    return yaml.load(open(_profile)) or {}
+     and (yaml.load(open(_profile)) or {}))
 
-def config():
-    return yaml.load(open(_config))
+config = lambda : yaml.load(open(_config))
+
+def func_print(data):
+    print data;
 
 if __name__ == '__main__':
     setitem('__main__config', get('twitter.com',{'require': {'email':'your email','password':'your password'}}))
