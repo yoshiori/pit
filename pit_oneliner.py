@@ -3,6 +3,9 @@
 import os, yaml, tempfile
 from subprocess import Popen
 
+g = globals()
+g.__setitem__("setitem", g.__setitem__)
+
 class Pit:
     VERSION   = "0.0.1"
     DIRECTORY = os.path.expanduser('~/.pit')
@@ -52,10 +55,10 @@ class Pit:
 
     @staticmethod
     def switch(name, opts={}):
-        Pit._profile = os.path.join(Pit.DIRECTORY, '%s.yaml' % name)
-        config = Pit.config()
-        ret = config['profile']
-        config['profile'] = name
+        setitem('profile', os.path.join(Pit.DIRECTORY, '%s.yaml' % name))
+        setitem('config', Pit.config())
+        setitem('ret', config['profile'])
+        setitem('config_profie',name)
         yaml.dump(config,
                   open(Pit._config, 'w'),
                   default_flow_style=False)
@@ -91,3 +94,5 @@ if __name__ == '__main__':
     print config
     print config['email']
     print config['password']
+
+
