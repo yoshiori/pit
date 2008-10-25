@@ -40,42 +40,40 @@ def set(name, opts={}):
               default_flow_style=False)
     return set_result
 
-def get(name, opts={}):
-    setitem('load_data', _load())
-    setitem('get_ret', load_data[name] if load_data.has_key(name) else {} )
-    if opts.has_key('require'):
-        setitem('get_for_keys', set(opts['require'].keys()) - set(get_ret.keys()))
-        if get_for_keys:
-            for key in keys:
-                setitem('get_for_ret_' + key,opts['require'][key]) 
-            setitem('get_ret', set(name,{'config' : get_ret}))
-          
-    return get_ret or {'username' : '', 'password' : ''}
+get = lambda name, opts={} :(
+    [setitem('load_data', _load())] and \
+    [setitem('get_ret', load_data[name] if load_data.has_key(name) else {} )] and \
+    [opts.has_key('require') and \
+        [setitem('get_for_keys', set(opts['require'].keys()) - set(get_ret.keys()))] and \
+        [get_for_keys and \
+            [[setitem('get_for_ret_' + key,opts['require'][key])] for key in get_for_keys] and \
+            [setitem('get_ret', set(name,{'config' : get_ret}))]]] and \
+    (get_ret or {'username' : '', 'password' : ''}) )
 
-def switch(name, opts={}):
-    setitem('_profile', os.path.join(DIRECTORY, '%s.yaml' % name))
-    setitem('switch_config', config())
-    setitem('switch_ret', switch_config['profile'])
-    setitem('switch_config_profie',name)
-    yaml.dump(switch_config,
+switch = lambda name, opts={} :(
+    [setitem('_profile', os.path.join(DIRECTORY, '%s.yaml' % name))] and
+    [setitem('switch_config', config())] and
+    [setitem('switch_ret', switch_config['profile'])] and
+    [setitem('switch_config_profie',name)] and
+    [yaml.dump(switch_config,
               open(_config, 'w'),
-              default_flow_style=False)
-    return switch_ret
+              default_flow_style=False)] and
+    switch_ret)
 
-def _load():
-    return ([[os.mkdir(DIRECTORY)] and [os.chmod(DIRECTORY, 0700)] if not os.path.exists(DIRECTORY) else True]
-    and
-    [[yaml.dump({'profile' : 'default'}, open(_config, 'w'), default_flow_style=False)] 
-     and [os.chmod(_config, 0600)] if not os.path.exists(_config) else True]
-    and
-    [switch(config()['profile'])]
-    and 
-    [[yaml.dump({}, 
-                open(_profile, 'w'), 
-                default_flow_style=False)]
-     and [os.chmod(_profile, 0600)] if not os.path.exists(_profile) else True]
-    
-     and (yaml.load(open(_profile)) or {}))
+_load = lambda :(
+        [[os.mkdir(DIRECTORY)] and [os.chmod(DIRECTORY, 0700)] if not os.path.exists(DIRECTORY) else True]
+        and
+        [[yaml.dump({'profile' : 'default'}, open(_config, 'w'), default_flow_style=False)] 
+         and [os.chmod(_config, 0600)] if not os.path.exists(_config) else True]
+        and
+        [switch(config()['profile'])]
+        and 
+        [[yaml.dump({}, 
+                    open(_profile, 'w'), 
+                    default_flow_style=False)]
+         and [os.chmod(_profile, 0600)] if not os.path.exists(_profile) else True]
+        
+        and (yaml.load(open(_profile)) or {}))
 
 config = lambda : yaml.load(open(_config))
 
