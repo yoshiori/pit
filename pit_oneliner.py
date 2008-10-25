@@ -14,55 +14,55 @@ class Pit:
     
     @staticmethod
     def set(name, opts={}):
-        profile = Pit._load()
-        result = {}
+        setitem('set_profile', Pit._load())
+        setitem('set_result', {})
         if opts.has_key('data'):
-            result = opts['data']
+            setitem('set_result', opts['data'])
         else:
             if not os.environ.has_key('EDITOR'):
                 return {}
-            t = tempfile.NamedTemporaryFile()
-            c = yaml.dump(opts['config'] if opts.has_key('config') else Pit.get(name) ,default_flow_style=False)
-            t.write(c)
-            t.flush()
-            path = os.path.abspath(t.name)
+            setitem('set_if_t', tempfile.NamedTemporaryFile())
+            setitem('set_if_c', yaml.dump(opts['config'] if opts.has_key('config') else Pit.get(name) ,default_flow_style=False))
+            set_if_t.write(c)
+            set_if_t.flush()
+            setitem('set_if_path', os.path.abspath(t.name))
             Popen([os.environ['EDITOR'],path]).communicate()
-            result = open(path).read()
-            if result == c:
+            setitem('set_result', open(path).read())
+            if set_result == c:
                 print 'No Changes'
-                return profile[name]
+                return set_profile[name]
 
-            result = yaml.load(result)
+            setitem('set_result', yaml.load(result))
 
-        profile[name] = result
-        yaml.dump(profile,
-                  open(Pit._profile, 'w'),
+        setitem('set_profile_'+ name, set_result)
+        yaml.dump(set_profile,
+                  open(_profile, 'w'),
                   default_flow_style=False)
-        return result
+        return set_result
 
     @staticmethod
     def get(name, opts={}):
-        load_data = Pit._load()
-        ret = load_data[name] if load_data.has_key(name) else {} 
+        setitem('load_data', Pit._load())
+        setitem('get_ret', load_data[name] if load_data.has_key(name) else {} )
         if opts.has_key('require'):
-            keys = set(opts['require'].keys()) - set(ret.keys())
-            if keys:
+            setitem('get_for_keys', set(opts['require'].keys()) - set(get_ret.keys()))
+            if get_for_keys:
                 for key in keys:
-                    ret[key] = opts['require'][key] 
-                ret = Pit.set(name,{'config' : ret})
-        
-        return ret or {'username' : '', 'password' : ''}
+                    setitem('get_for_ret_' + key,opts['require'][key]) 
+                setitem('get_ret', Pit.set(name,{'config' : get_ret}))
+          
+        return get_ret or {'username' : '', 'password' : ''}
 
     @staticmethod
     def switch(name, opts={}):
-        setitem('profile', os.path.join(Pit.DIRECTORY, '%s.yaml' % name))
-        setitem('config', Pit.config())
-        setitem('ret', config['profile'])
-        setitem('config_profie',name)
-        yaml.dump(config,
+        setitem('_profile', os.path.join(Pit.DIRECTORY, '%s.yaml' % name))
+        setitem('switch_config', Pit.config())
+        setitem('switch_ret', switch_config['profile'])
+        setitem('switch_config_profie',name)
+        yaml.dump(switch_config,
                   open(Pit._config, 'w'),
                   default_flow_style=False)
-        return ret
+        return switch_ret
 
     @staticmethod
     def _load():
