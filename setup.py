@@ -13,7 +13,7 @@ setup(
   version = __version__,
   py_modules = ['pit'],
   author='Yoshiori SHOJI',
-  author_email='yoshiori@google.com',
+  author_email='yoshiori@gmail.com',
   description='pit: account management tool',
   install_requires = ['pyYAML'],
 )
