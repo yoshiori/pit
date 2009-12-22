@@ -18,13 +18,16 @@ class Pit:
         else:
             if not os.environ.has_key('EDITOR'):
                 return {}
-            t = tempfile.NamedTemporaryFile()
+            
+            t, path = tempfile.mkstemp()
             c = yaml.dump(opts['config'] if opts.has_key('config') else Pit.get(name) ,default_flow_style=False)
             t.write(c)
-            t.flush()
-            path = os.path.abspath(t.name)
+            t.close()
             Popen([os.environ['EDITOR'],path]).communicate()
-            result = open(path).read()
+            t = open(path)
+            result = t.read()
+            t.close()
+            os.remove(t)
             if result == c:
                 print 'No Changes'
                 return profile[name]
