@@ -16,5 +16,17 @@ class PitTestCase(unittest.TestCase):
         self.assertEqual( "bar", Pit.get("test")["password"])
 
         self.assertEqual( "foo", Pit.set("test",{'data':{"username":"foo","password":"bar"}})["username"])
+
+    def test_with_mock_editor(self):
+        import os
+        ORIGINAL_EDITOR = os.environ.get('EDITOR')
+        os.environ["EDITOR"] = "./mock_editor.py"
+        conf = Pit.get('test', 
+                       {'require': 
+                        {'login': 'your ID', 
+                         'passwd': 'GoMa'}})
+        os.environ["EDITOR"] = ORIGINAL_EDITOR
+
+
 if __name__ == "__main__":
         unittest.main()

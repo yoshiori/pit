@@ -19,7 +19,8 @@ class Pit:
             if not os.environ.has_key('EDITOR'):
                 return {}
             
-            t, path = tempfile.mkstemp()
+            temp_fd, path = tempfile.mkstemp()
+            t = os.fdopen(temp_fd, "w")
             c = yaml.dump(opts['config'] if opts.has_key('config') else Pit.get(name) ,default_flow_style=False)
             t.write(c)
             t.close()
@@ -27,9 +28,11 @@ class Pit:
             t = open(path)
             result = t.read()
             t.close()
-            os.remove(t)
+            os.remove(path)
+
             if result == c:
                 print 'No Changes'
+                print profile
                 return profile[name]
 
             result = yaml.load(result)
