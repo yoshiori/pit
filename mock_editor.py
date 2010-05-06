@@ -3,3 +3,4 @@
 
 # mock editor
 # given a file path and do nothing
+# it should be "chmod +x"ed

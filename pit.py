@@ -32,8 +32,7 @@ class Pit:
 
             if result == c:
                 print 'No Changes'
-                print profile
-                return profile[name]
+                return
 
             result = yaml.load(result)
 
