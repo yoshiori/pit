@@ -12,7 +12,6 @@ class Pit:
     @staticmethod
     def set(name, opts={}):
         profile = Pit._load()
-        result = {}
         if opts.has_key('data'):
             result = opts['data']
         else:
