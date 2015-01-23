@@ -4,7 +4,7 @@ import os, yaml, tempfile
 from subprocess import Popen
 
 class Pit:
-    VERSION   = "0.3"
+    VERSION   = "0.4"
     DIRECTORY = os.path.expanduser('~/.pit')
     _config = os.path.join(DIRECTORY, 'pit.yaml')
     _profile = os.path.join(DIRECTORY, 'default.yaml')
