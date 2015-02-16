@@ -4,7 +4,7 @@ import os, yaml, tempfile
 from subprocess import Popen
 
 class Pit:
-    VERSION   = "0.3"
+    VERSION   = "0.4"
     DIRECTORY = os.path.expanduser('~/.pit')
     _config = os.path.join(DIRECTORY, 'pit.yaml')
     _profile = os.path.join(DIRECTORY, 'default.yaml')
@@ -12,16 +12,15 @@ class Pit:
     @staticmethod
     def set(name, opts={}):
         profile = Pit._load()
-        result = {}
-        if opts.has_key('data'):
+        if 'data' in opts:
             result = opts['data']
         else:
-            if not os.environ.has_key('EDITOR'):
+            if 'EDITOR' not in os.environ:
                 return {}
             
             temp_fd, path = tempfile.mkstemp()
             t = os.fdopen(temp_fd, "w")
-            c = yaml.dump(opts['config'] if opts.has_key('config') else Pit.get(name) ,default_flow_style=False)
+            c = yaml.dump(opts['config'] if 'config' in opts else Pit.get(name) ,default_flow_style=False)
             t.write(c)
             t.close()
             Popen([os.environ['EDITOR'],path]).communicate()
@@ -31,9 +30,9 @@ class Pit:
             os.remove(path)
 
             if result == c:
-                print 'No Changes'
+                print('No Changes')
                 if name in profile:
-                    return profile[nane]
+                    return profile[name]
                 return
 
             result = yaml.load(result)
@@ -47,8 +46,8 @@ class Pit:
     @staticmethod
     def get(name, opts={}):
         load_data = Pit._load()
-        ret = load_data[name] if load_data.has_key(name) else {} 
-        if opts.has_key('require'):
+        ret = load_data[name] if name in load_data else {}
+        if 'require' in opts:
             keys = set(opts['require'].keys()) - set(ret.keys())
             if keys:
                 for key in keys:
@@ -72,13 +71,13 @@ class Pit:
     def _load():
         if not os.path.exists(Pit.DIRECTORY):
             os.mkdir(Pit.DIRECTORY)
-            os.chmod(Pit.DIRECTORY, 0700)
+            os.chmod(Pit.DIRECTORY, 0o700)
 
         if not os.path.exists(Pit._config):
             yaml.dump({'profile' : 'default'},
                       open(Pit._config, 'w'),
                       default_flow_style=False)
-            os.chmod(Pit._config, 0600)
+            os.chmod(Pit._config, 0o600)
 
         Pit.switch(Pit.config()['profile'])
 
@@ -86,7 +85,7 @@ class Pit:
             yaml.dump({}, 
                       open(Pit._profile, 'w'), 
                       default_flow_style=False)
-            os.chmod(Pit._profile, 0600)
+            os.chmod(Pit._profile, 0o600)
         return yaml.load(open(Pit._profile)) or {}
 
     @staticmethod
@@ -95,6 +94,6 @@ class Pit:
 
 if __name__ == '__main__':
     config = Pit.get('34twitter.com',{'require': {'email':'your email','password':'your password'}})
-    print config
-    print config['email']
-    print config['password']
+    print(config)
+    print(config['email'])
+    print(config['password'])

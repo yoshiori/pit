@@ -21,10 +21,10 @@ class PitTestCase(unittest.TestCase):
         import os
         ORIGINAL_EDITOR = os.environ.get('EDITOR')
         os.environ["EDITOR"] = "./mock_editor.py"
-        conf = Pit.get('test', 
-                       {'require': 
-                        {'login': 'your ID', 
-                         'passwd': 'GoMa'}})
+        Pit.get('test',
+                {'require':
+                 {'login': 'your ID',
+                  'passwd': 'GoMa'}})
         os.environ["EDITOR"] = ORIGINAL_EDITOR
 
     def test_get_not_exist_key(self):
