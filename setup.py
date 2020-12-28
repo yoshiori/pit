@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = '0.4'
+__version__ = '0.5'
 
 #import ez_setup
 #ez_setup.use_setuptools()
